@@ -5,7 +5,6 @@ import joblib
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import logging
 from datetime import datetime
 
 PROCESSED_DIR = "include/data/processed"
@@ -18,11 +17,14 @@ def train(file_path):
     os.makedirs(MODEL_DIR, exist_ok=True)
     os.makedirs(MLFLOW_DIR, exist_ok=True)
 
-    # Set MLflow tracking URI and experiment
+    # MLflow setup
     mlflow.set_tracking_uri(f"file:{MLFLOW_DIR}")
     mlflow.set_experiment("rps_experiment")
 
-    # Build consistent model save path
+    # Close any active run
+    if mlflow.active_run() is not None:
+        mlflow.end_run()
+
     model_path = f"{MODEL_DIR}/rf_model_{os.path.basename(file_path).replace('.csv','.pkl')}"
 
     # -------------------------------
@@ -58,16 +60,14 @@ def train(file_path):
         X, y, test_size=test_size, random_state=42
     )
 
-    with mlflow.start_run(run_name=f"{os.path.basename(file_path)}_{datetime.now().strftime('%Y%m%d%H%M%S')}"):
-
+    run_name = f"{os.path.basename(file_path)}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    with mlflow.start_run(run_name=run_name):
         # Train model
         model = RandomForestRegressor(n_estimators=100, random_state=42)
         model.fit(X_train, y_train)
 
-        # Predict
+        # Predict & metrics
         preds = model.predict(X_test)
-
-        # Metrics
         mae = mean_absolute_error(y_test, preds)
         rmse = mean_squared_error(y_test, preds, squared=False)
         r2 = r2_score(y_test, preds)
@@ -79,11 +79,11 @@ def train(file_path):
         mlflow.log_metric("R2", r2)
         mlflow.log_artifact(file_path)
 
-        # Save model file
+        # Save & log model
         joblib.dump(model, model_path)
         mlflow.log_artifact(model_path)
 
-        # Log feature importance
+        # Feature importance
         feat_imp = pd.DataFrame({
             "feature": X.columns,
             "importance": model.feature_importances_
