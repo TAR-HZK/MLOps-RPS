@@ -1,2 +1,0 @@
-timestamp,city,temperature,humidity,pressure,wind_speed,weather_main,hour,temp_lag1,temp_rolling3
-2025-11-30 06:53:59.138458,London,2.95,88,1011,5.14,Clear,6,,
