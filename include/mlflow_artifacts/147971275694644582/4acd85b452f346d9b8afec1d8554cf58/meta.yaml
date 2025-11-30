@@ -1,0 +1,14 @@
+artifact_uri: file:///usr/local/airflow/include/mlflow_artifacts/147971275694644582/4acd85b452f346d9b8afec1d8554cf58/artifacts
+end_time: 1764513147123
+entry_point_name: ''
+experiment_id: '147971275694644582'
+lifecycle_stage: active
+run_id: 4acd85b452f346d9b8afec1d8554cf58
+run_name: lyrical-colt-113
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764513147092
+status: 3
+tags: []
+user_id: <user>

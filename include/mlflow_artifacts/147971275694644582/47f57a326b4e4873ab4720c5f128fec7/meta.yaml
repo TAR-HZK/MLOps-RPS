@@ -1,0 +1,14 @@
+artifact_uri: file:///usr/local/airflow/include/mlflow_artifacts/147971275694644582/47f57a326b4e4873ab4720c5f128fec7/artifacts
+end_time: 1764487505604
+entry_point_name: ''
+experiment_id: '147971275694644582'
+lifecycle_stage: active
+run_id: 47f57a326b4e4873ab4720c5f128fec7
+run_name: awesome-owl-367
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764487505583
+status: 3
+tags: []
+user_id: <user>
