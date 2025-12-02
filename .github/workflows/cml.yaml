@@ -32,10 +32,13 @@ jobs:
       - name: Train Model
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # --- ADD THESE 3 LINES ---
+          MLFLOW_TRACKING_URI: https://dagshub.com/TAR-HZK/MLOps-RPS.mlflow
+          MLFLOW_TRACKING_USERNAME: TAR-HZK
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
-          # Run training and pipe output to a report file
           python src/train_model.py include/data/processed/processed_data.csv > report.txt
-          
+          # ... (rest of the script remains the same)
           # Create a CML report
           echo "## 🤖 Model Performance Report" >> report.md
           echo "Here are the metrics for the latest training run:" >> report.md
