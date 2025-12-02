@@ -1,6 +1,12 @@
 name: Model-Training-Report
 on: [push]
 
+# --- FIX 1: Add Permissions Block ---
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -18,7 +24,7 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      # 3. Pull Data from Dagshub (The Cloud)
+      # 3. Pull Data from Dagshub
       - name: Pull Data with DVC
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
@@ -32,19 +38,17 @@ jobs:
       - name: Train Model
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # --- ADD THESE 3 LINES ---
           MLFLOW_TRACKING_URI: https://dagshub.com/TAR-HZK/MLOps-RPS.mlflow
           MLFLOW_TRACKING_USERNAME: TAR-HZK
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           python src/train_model.py include/data/processed/processed_data.csv > report.txt
-          # ... (rest of the script remains the same)
-          # Create a CML report
+          
           echo "## 🤖 Model Performance Report" >> report.md
           echo "Here are the metrics for the latest training run:" >> report.md
           
-          # Extract the metrics line from the output (The line starting with 📊)
-          grep "📊" report.txt >> report.md || echo "Metrics not found in output" >> report.md
+          # --- FIX 2: Updated Grep to match your Python print statement ---
+          grep "MAE" report.txt >> report.md || echo "Metrics not found in output" >> report.md
           
           echo " " >> report.md
           echo "### Full Training Log" >> report.md
@@ -52,5 +56,4 @@ jobs:
           cat report.txt >> report.md
           echo "\`\`\`" >> report.md
 
-          # Post the report as a comment on the commit
           cml comment create report.md
