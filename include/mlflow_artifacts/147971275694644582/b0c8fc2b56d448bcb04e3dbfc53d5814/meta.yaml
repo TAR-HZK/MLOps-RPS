@@ -1,0 +1,14 @@
+artifact_uri: file:///usr/local/airflow/include/mlflow_artifacts/147971275694644582/b0c8fc2b56d448bcb04e3dbfc53d5814/artifacts
+end_time: 1764684364897
+entry_point_name: ''
+experiment_id: '147971275694644582'
+lifecycle_stage: active
+run_id: b0c8fc2b56d448bcb04e3dbfc53d5814
+run_name: run_20251202_140603
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764684364360
+status: 4
+tags: []
+user_id: <user>

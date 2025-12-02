@@ -7,6 +7,16 @@ services:
   webserver:
     ports:
       - "8082:8080"  # Host 8082 → Container 8080 to avoid conflict with api-server
+    volumes:
+      - ./.git:/usr/local/airflow/.git
   postgres:
     ports:
       - "55432:5432" # Host 55432 → Container 5432 to avoid default 5432 conflict
+  scheduler:
+    volumes:
+      - ./.git:/usr/local/airflow/.git
+  triggerer:
+    volumes:
+      - ./.git:/usr/local/airflow/.git
+
+  

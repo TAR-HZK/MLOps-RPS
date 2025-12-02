@@ -2,3 +2,5 @@
     remote = myremote
 ['remote "myremote"']
     url = /home/tarhzk/dvc_remote
+['remote "origin"']
+    url = https://dagshub.com/TAR-HZK/MLOps-RPS.dvc
