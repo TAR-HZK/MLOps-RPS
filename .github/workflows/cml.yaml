@@ -1,0 +1,53 @@
+name: Model-Training-Report
+on: [push]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # 1. Setup Python & CML
+      - uses: iterative/setup-cml@v1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # 2. Install dependencies
+      - name: Install Requirements
+        run: |
+          pip install -r requirements.txt
+
+      # 3. Pull Data from Dagshub (The Cloud)
+      - name: Pull Data with DVC
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user TAR-HZK
+          dvc remote modify origin --local password $DAGSHUB_TOKEN
+          dvc pull -r origin
+
+      # 4. Train Model & Generate Report
+      - name: Train Model
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Run training and pipe output to a report file
+          python src/train_model.py include/data/processed/processed_data.csv > report.txt
+          
+          # Create a CML report
+          echo "## 🤖 Model Performance Report" >> report.md
+          echo "Here are the metrics for the latest training run:" >> report.md
+          
+          # Extract the metrics line from the output (The line starting with 📊)
+          grep "📊" report.txt >> report.md || echo "Metrics not found in output" >> report.md
+          
+          echo " " >> report.md
+          echo "### Full Training Log" >> report.md
+          echo "\`\`\`" >> report.md
+          cat report.txt >> report.md
+          echo "\`\`\`" >> report.md
+
+          # Post the report as a comment on the commit
+          cml comment create report.md
