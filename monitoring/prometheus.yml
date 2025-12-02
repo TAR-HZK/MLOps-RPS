@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s  # Scrape every 5 seconds (Fast for demo purposes)
+
+scrape_configs:
+  - job_name: 'rps_api'
+    static_configs:
+      - targets: ['api:8000']  # "api" is the container name we will define below
