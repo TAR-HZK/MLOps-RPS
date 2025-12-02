@@ -57,3 +57,29 @@ jobs:
           echo "\`\`\`" >> report.md
 
           cml comment create report.md
+
+      # 5. Prepare Model for Docker (Rename to standard name)
+      - name: Prepare Model for Deployment
+        run: |
+          # Find the latest trained pickle file and rename it to latest_model.pkl
+          # This ensures Dockerfile.api picks up the model we JUST trained
+          mv include/models/rf_model_*.pkl include/models/latest_model.pkl
+
+      # 6. Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 7. Build and Push Docker Image
+      - name: Build and Push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.api
+          push: true
+          # Tags: pushes 'latest' and a versioned tag based on the commit hash
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/rps-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/rps-api:${{ github.sha }}
